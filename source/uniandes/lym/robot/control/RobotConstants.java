@@ -25,13 +25,27 @@ public interface RobotConstants {
   /** RegularExpression Id. */
   int HOP = 11;
   /** RegularExpression Id. */
-  int BALLOONS = 12;
+  int EXEC = 12;
   /** RegularExpression Id. */
-  int CHIPS = 13;
+  int NEW = 13;
   /** RegularExpression Id. */
-  int NUM = 14;
+  int VAR = 14;
   /** RegularExpression Id. */
-  int DIGIT = 15;
+  int MACRO = 15;
+  /** RegularExpression Id. */
+  int EQUALS = 16;
+  /** RegularExpression Id. */
+  int BALLOONS = 17;
+  /** RegularExpression Id. */
+  int CHIPS = 18;
+  /** RegularExpression Id. */
+  int NUM = 19;
+  /** RegularExpression Id. */
+  int DIGIT = 20;
+  /** RegularExpression Id. */
+  int ID = 21;
+  /** RegularExpression Id. */
+  int LETTER = 22;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -50,14 +64,21 @@ public interface RobotConstants {
     "\"Pop\"",
     "\"GO\"",
     "\"HOP\"",
+    "\"EXEC\"",
+    "\"NEW\"",
+    "\"VAR\"",
+    "\"MACRO\"",
+    "\"=\"",
     "\"BALLOONS\"",
     "\"CHIPS\"",
     "<NUM>",
     "<DIGIT>",
+    "<ID>",
+    "<LETTER>",
+    "\";\"",
     "\"(\"",
     "\")\"",
     "\",\"",
-    "\";\"",
   };
 
 }
