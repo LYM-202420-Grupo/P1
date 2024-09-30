@@ -20,29 +20,43 @@ public class Robot implements RobotConstants {
     void setWorld(RobotWorld w) {
         world = (RobotWorldDec) w;
     }
-// Ejecutar turn to my
-void executeTurnToMy(String dir) {
-    if (dir.equalsIgnoreCase("left")) {
-        world.turnLeft();
-    } else if (dir.equalsIgnoreCase("right")) {
-        world.turnRight();
-    } else if (dir.equalsIgnoreCase("back")) {
-        world.turnBack();
-    }
-}
 
-// Ejecutar turn to the
-void executeTurnToThe(String orient) {
-    if (orient.equalsIgnoreCase("north")) {
-        world.turnTo(Robotworld.NORTH);
-    } else if (orient.equalsIgnoreCase("south")) {
-        world.turnTo(Robotworld.SOUTH);
-    } else if (orient.equalsIgnoreCase("east")) {
-        world.turnTo(Robotworld.EAST);
-    } else if (orient.equalsIgnoreCase("west")) {
-        world.turnTo(Robotworld.WEST);
+    // Ejecutar turn to my
+    void executeTurnToMy(String dir) {
+        if (dir.equalsIgnoreCase("left")) {
+            world.turnLeft();
+        } else if (dir.equalsIgnoreCase("right")) {
+            world.turnRight();
+        } else if (dir.equalsIgnoreCase("back")) {
+            world.turnBack();
+        }
     }
-  }
+
+    // Ejecutar turn to the
+    void executeTurnToThe(String orient) {
+        if (orient.equalsIgnoreCase("north")) {
+            world.turnTo(Robotworld.NORTH);
+        } else if (orient.equalsIgnoreCase("south")) {
+            world.turnTo(Robotworld.SOUTH);
+        } else if (orient.equalsIgnoreCase("east")) {
+            world.turnTo(Robotworld.EAST);
+        } else if (orient.equalsIgnoreCase("west")) {
+            world.turnTo(Robotworld.WEST);
+        }
+    }
+
+  final public int num() throws ParseException, Error {int total = 1; // Valor por defecto
+
+    jj_consume_token(NUM);
+try {
+            total = Integer.parseInt(token.image); // Convierte el número de la cadena
+        } catch (NumberFormatException ee) {
+            {if (true) throw new Error("Number out of bounds: " + token.image + " !!");}
+        }
+        {if ("" != null) return total;} // Devuelve el número parseado
+
+    throw new Error("Missing return statement in function");
+}
 
   final public String ID() throws ParseException {Token t;
     t = jj_consume_token(ID);
@@ -172,7 +186,7 @@ world.turnRight(); salida = "Command: Turn right";
         jj_consume_token(56);
         x = num();
         jj_consume_token(57);
-world.moveForward(x, false); salida = "Command: Move forward";
+world.moveForward(x, false); salida = "Command: Move forward " + x + " steps";
         break;
         }
       case HOP:{
@@ -180,7 +194,7 @@ world.moveForward(x, false); salida = "Command: Move forward";
         jj_consume_token(56);
         x = num();
         jj_consume_token(57);
-world.moveForward(x, true); salida = "Command: Jump forward";
+world.moveForward(x, true); salida = "Command: Jump forward " + x + " steps";
         break;
         }
       case TURNTOMY:{
@@ -204,7 +218,7 @@ executeTurnToThe(orient); salida = "Command: Turn to The " + orient;
         jj_consume_token(56);
         steps = num();
         jj_consume_token(57);
-world.moveForward(steps, false); salida = "Command: Walk " + steps + " steps forward";
+world.moveForward(steps, false); salida = "Command: Walk " + steps + " steps";
         break;
         }
       case JUMP:{
@@ -212,7 +226,7 @@ world.moveForward(steps, false); salida = "Command: Walk " + steps + " steps for
         jj_consume_token(56);
         steps = num();
         jj_consume_token(57);
-world.moveForward(steps, true); salida = "Command: Jump " + steps + " steps forward";
+world.moveForward(steps, true); salida = "Command: Jump " + steps + " steps";
         break;
         }
       case GO:{
@@ -222,7 +236,7 @@ world.moveForward(steps, true); salida = "Command: Jump " + steps + " steps forw
         jj_consume_token(58);
         y = num();
         jj_consume_token(57);
-world.setPostion(x, y); salida = "Command: GO";
+world.setPostion(x, y); salida = "Command: GO to position (" + x + "," + y + ")";
         break;
         }
       case PUT:{
@@ -244,7 +258,7 @@ world.setPostion(x, y); salida = "Command: GO";
         jj_consume_token(56);
         x = num();
         jj_consume_token(57);
-world.popBalloons(x); salida = "Command: Pop";
+world.popBalloons(x); salida = "Command: Pop " + x + " balloons";
         break;
         }
       default:
@@ -254,7 +268,7 @@ world.popBalloons(x); salida = "Command: Pop";
       }
       jj_consume_token(55);
 try {
-            Thread.sleep(900);
+            Thread.sleep(900); // Añade un pequeño retardo entre comandos
         } catch (InterruptedException e) {
             System.err.format("IOException: %s%n", e);
         }
@@ -321,17 +335,6 @@ world.grabBalloons(f); salida = "Command: Pick Balloons";
     }
 }
 
-  final public int num() throws ParseException, Error {int total = 1;
-    jj_consume_token(NUM);
-try {
-            total = Integer.parseInt(token.image);
-        } catch (NumberFormatException ee) {
-            {if (true) throw new Error("Number out of bounds: " + token.image + " !!");}
-        }
-        {if ("" != null) return total;}
-    throw new Error("Missing return statement in function");
-}
-
   final public String direction() throws ParseException {Token t;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case LEFT:{
@@ -382,60 +385,6 @@ try {
     throw new Error("Missing return statement in function");
 }
 
-// Agregar la condición if
-  final public void conditional(Console sistema) throws ParseException {
-    jj_consume_token(IF);
-    jj_consume_token(56);
-    condition();
-    jj_consume_token(57);
-    jj_consume_token(THEN);
-    block(sistema);
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case ELSE:{
-      jj_consume_token(ELSE);
-      block(sistema);
-      break;
-      }
-    default:
-      jj_la1[9] = jj_gen;
-      ;
-    }
-    jj_consume_token(FI);
-salida = "Conditional executed.";
-        sistema.printOutput(salida);
-}
-
-// Agregar el bucle do...od
-  final public void loop(Console sistema) throws ParseException {boolean conditionResult;
-    jj_consume_token(DO);
-    jj_consume_token(56);
-    condition();
-    jj_consume_token(57);
-    block(sistema);
-    jj_consume_token(OD);
-while (conditionResult) {
-        block(sistema);
-        conditionResult = condition();
-      }
-        salida = "Loop executed.";
-        sistema.printOutput(salida);
-}
-
-// Agregar la repetición rep...per
-  final public void repeat(Console sistema) throws ParseException {int times;
-    jj_consume_token(REP);
-    times = num();
-    jj_consume_token(TIMES);
-    block(sistema);
-    jj_consume_token(PER);
-for (int i = 0; i < times; i++) {
-        block(sistema);
-      }
-        salida = "Repeated " + times + " times.";
-        sistema.printOutput(salida);
-}
-
-// Condiciones adicionales
   final public boolean condition() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case ISBLOCKED:{
@@ -474,14 +423,13 @@ for (int i = 0; i < times; i++) {
       break;
       }
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[9] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
 }
 
-// Implementación del comando letGo
   final public void letGo() throws ParseException {int balloons;
     jj_consume_token(LETGO);
     jj_consume_token(56);
@@ -491,7 +439,6 @@ world.putBalloons(balloons);
         salida = "Command: Let go " + balloons + " balloons.";
 }
 
-// Mejora del comando safeExe
   final public void safeExe(Console sistema) throws ParseException {boolean success = true;
     jj_consume_token(SAFEEXE);
     jj_consume_token(56);
@@ -511,7 +458,6 @@ try {
         sistema.printOutput(salida);
 }
 
-// Comando moves mejorado
   final public void moves() throws ParseException {List<String> directions = new LinkedList<>();
     String dir;
     jj_consume_token(MOVES);
@@ -526,7 +472,7 @@ directions.add(dir);
         break;
         }
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[10] = jj_gen;
         break label_3;
       }
       jj_consume_token(58);
@@ -553,51 +499,6 @@ String initialDirection = world.getFacing();
         salida = "Command: Moves executed.";
 }
 
-  final public int value() throws ParseException {int val = 0;
-  String varName;
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case NUM:{
-      val = num();
-{if ("" != null) return val;}
-      break;
-      }
-    case ID:{
-      varName = jj_consume_token(ID);
-if (vars.containsKey(varName)) {
-        {if ("" != null) return vars.get(varName);}
-      } else {
-        {if (true) throw new Error("Variable no definida: " + varName);}
-      }
-      break;
-      }
-    case SIZE:{
-      jj_consume_token(SIZE);
-{if ("" != null) return world.getN();}
-      break;
-      }
-    case MYCHIPS:{
-      jj_consume_token(MYCHIPS);
-{if ("" != null) return world.getMyChips();}
-      break;
-      }
-    case MYBALLOONS:{
-      jj_consume_token(MYBALLOONS);
-{if ("" != null) return world.getMyBalloons();}
-      break;
-      }
-    case BALLONSHERE:{
-      jj_consume_token(BALLONSHERE);
-{if ("" != null) return world.countBalloons();}
-      break;
-      }
-    default:
-      jj_la1[12] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-}
-
   /** Generated Token Manager. */
   public RobotTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -607,7 +508,7 @@ if (vars.containsKey(varName)) {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[13];
+  final private int[] jj_la1 = new int[11];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -615,10 +516,10 @@ if (vars.containsKey(varName)) {
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x0,0x0,0x1801fe1,0x1801fe0,0x1801fe1,0x0,0x0,0x60040,0x780000,0x0,0x70000000,0x0,0x0,};
+	   jj_la1_0 = new int[] {0x0,0x0,0x1801fe1,0x1801fe0,0x1801fe1,0x0,0x0,0x60040,0x780000,0x70000000,0x0,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x4000000,0x200000,0x1800,0x1800,0x1800,0x60000,0x60000,0x0,0x0,0x4,0x200,0x4000000,0x29e000,};
+	   jj_la1_1 = new int[] {0x4000000,0x200000,0x1800,0x1800,0x1800,0x60000,0x60000,0x0,0x0,0x200,0x4000000,};
 	}
 
   /** Constructor with InputStream. */
@@ -632,7 +533,7 @@ if (vars.containsKey(varName)) {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -646,7 +547,7 @@ if (vars.containsKey(varName)) {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -656,7 +557,7 @@ if (vars.containsKey(varName)) {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -674,7 +575,7 @@ if (vars.containsKey(varName)) {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -683,7 +584,7 @@ if (vars.containsKey(varName)) {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -692,7 +593,7 @@ if (vars.containsKey(varName)) {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -748,7 +649,7 @@ if (vars.containsKey(varName)) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 13; i++) {
+	 for (int i = 0; i < 11; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {

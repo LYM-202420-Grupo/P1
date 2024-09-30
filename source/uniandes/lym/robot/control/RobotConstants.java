@@ -97,11 +97,11 @@ public interface RobotConstants {
   /** RegularExpression Id. */
   int MYBALLOONS = 47;
   /** RegularExpression Id. */
-  int BALLONSHERE = 48;
+  int BALLOONSHERE = 48;
   /** RegularExpression Id. */
-  int BALLOONS = 49;
+  int CHIPS = 49;
   /** RegularExpression Id. */
-  int CHIPS = 50;
+  int BALLOONS = 50;
   /** RegularExpression Id. */
   int NUM = 51;
   /** RegularExpression Id. */
@@ -165,8 +165,8 @@ public interface RobotConstants {
     "\"myChips\"",
     "\"myBalloons\"",
     "\"balloonsHere\"",
-    "\"BALLOONS\"",
-    "\"CHIPS\"",
+    "\"chips\"",
+    "\"balloons\"",
     "<NUM>",
     "<DIGIT>",
     "<ID>",
