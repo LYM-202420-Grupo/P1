@@ -1,24 +1,12 @@
-/*
-Gramatica para el Robot:
-Autor: Alejandro Arango
-Modificado por: Silvia Takahashi
-Modificado por: Juan Pablo Morales.
-Agregadas producciones para manejar globos
-Modificado por Silvia Takahashi
-
-
- **/
-
-
+/* Gramatica para el Robot: Autor: Alejandro Arango Modificado por: Silvia Takahashi Modificado por: 
+Juan Pablo Morales. 
+Agregadas producciones para manejar globos Modificado por Silvia Takahashi **/
 options 
 {
-  
-	LOOKAHEAD=1; 
-	IGNORE_CASE=true;
-	STATIC = false;
-	
+    LOOKAHEAD=1; 
+    IGNORE_CASE=true;
+    STATIC = false;
 }
-   
 
 PARSER_BEGIN(Robot)
 
@@ -31,344 +19,428 @@ import java.awt.Point;
 import java.io.*;
 import java.util.Vector;
 import java.util.LinkedList;
+import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class Robot 
 {
-	public HashMap<String, Integer > vars = new HashMap<String, Integer >();
-	
-	private RobotWorldDec world;
-	
-	
-	void setWorld(RobotWorld w) {
-		world = (RobotWorldDec) w;	
-	}
+    public HashMap<String, Integer > vars = new HashMap<String, Integer >();
+    private RobotWorldDec world;
+    String salida = new String();
 
-	String salida=new String();
+    void setWorld(RobotWorld w) {
+        world = (RobotWorldDec) w;    
+    }
+// Ejecutar turn to my
+void executeTurnToMy(String dir) {
+    if (dir.equalsIgnoreCase("left")) {
+        world.turnLeft();
+    } else if (dir.equalsIgnoreCase("right")) {
+        world.turnRight();
+    } else if (dir.equalsIgnoreCase("back")) {
+        world.turnBack();
+    }
+}
+
+// Ejecutar turn to the
+void executeTurnToThe(String orient) {
+    if (orient.equalsIgnoreCase("north")) {
+        world.turnTo(Robotworld.NORTH);
+    } else if (orient.equalsIgnoreCase("south")) {
+        world.turnTo(Robotworld.SOUTH);
+    } else if (orient.equalsIgnoreCase("east")) {
+        world.turnTo(Robotworld.EAST);
+    } else if (orient.equalsIgnoreCase("west")) {
+        world.turnTo(Robotworld.WEST);
+    }
+  }
+
+    
 }
 PARSER_END(Robot)
 
 SKIP:
 {
-	" "
-	|	"\r"
-	|	"\t"
-	| "\n"
+    " " | "\r" | "\t" | "\n"
 }
 
 TOKEN: /* Nombres de Comandos */
 {
-
-		   <MOV:  "Mov">
-		|  <RIGHT: "RIGHT">
-		|  <PUT: "Put">
-		|  <PICK: "Pick">
-		|  < POP: "Pop" >
-		|  <GO: "GO" >
-        |  < HOP:  "HOP" >
-        |  < EXEC: "EXEC" >
-        |  < NEW: "NEW" >
-        |  < VAR: "VAR" >
-        |  < MACRO: "MACRO" >
-        |  < EQUALS: "=" >
-        |  < LEFT: "left" >
-        |  < RIGHT: "right" >
-        |  < BACK: "back" >
-        |  < NORTH: "north" >
-        |  < SOUTH: "south" >
-        |  < EAST: "east" >
-        |  < WEST: "west" >
-        |  < WALK: "walk" >
-        |  <JUMP: "jump" >
-        |  <MOVES: "moves" >
-        |  <NOP: "nop" >
-        |  < SAFEEXE: "safeExe" >
-
+    <MOV: "Mov"> |
+    <RIGHT: "RIGHT"> |
+    <PUT: "Put"> |
+    <PICK: "Pick"> |
+    <POP: "Pop"> |
+    <GO: "GO"> |
+    <HOP: "HOP"> |
+    <EXEC: "EXEC"> |
+    <NEW: "NEW"> |
+    <VAR: "VAR"> |
+    <MACRO: "MACRO"> |
+    <EQUALS: "="> |
+    <LEFT: "left"> |
+    <BACK: "back"> |
+    <NORTH: "north"> |
+    <SOUTH: "south"> |
+    <EAST: "east"> |
+    <WEST: "west"> |
+    <WALK: "walk"> |
+    <JUMP: "jump"> |
+    <MOVES: "moves"> |
+    <NOP: "nop"> |
+    <SAFEEXE: "safeExe">|
+    <ISBLOCKED: "blocked" >|
+    <ISFACING: "facing" > |
+    < ZERO: "zero" >|
+    < QUESTIONMARK: "?" >|
+    < IF: "if" >|
+    < THEN: "then" >|
+    < ELSE: "else" >|
+    < FI: "fi" >|
+    < DO: "do" >|
+    < OD: "od" >|
+    < REP: "rep" >|
+    < TIMES: "times" >|
+    < PER: "per" >|
+    < NOT: "not" >|
+    < LETGO: "letGo" >|
+    < TURNTOMY: "turnToMy" >|
+    < TURNTOTHE: "turnToThe" > |
+    < SIZE: "size" >|
+    < MYCHIPS: "myChips" >|
+    < MYBALLOONS: "myBalloons" >|
+    < BALLONSHERE: "balloonsHere" >    
+    
 }
 
 TOKEN:
 {
-		<BALLOONS:  "BALLOONS" >
-		|	<CHIPS:     "CHIPS"  >	
-
+    <BALLOONS: "BALLOONS"> |
+    <CHIPS: "CHIPS">
 }
 
-
-
-TOKEN :
+TOKEN:
 {
-		<NUM: (<DIGIT>)+ >
-		|  	<#DIGIT: ["0"-"9"] >
-		| < ID: < LETTER > (< LETTER > | < DIGIT >)* >
-		| < #LETTER : ["a"-"z", "A"-"Z"] >
-        
+    <NUM: (<DIGIT>)+> |
+    <#DIGIT: ["0"-"9"]> |
+    <ID: <LETTER> (<LETTER> | <DIGIT>)*> |
+    <#LETTER: ["a"-"z", "A"-"Z"]>
 }
 
-	String ID():
-	{
-	  Token t;
-	}
-	{
-	  t = < ID >
-	  {
-	    return t.image;
-	  }
-	}
-		  
-    //Comando EXEC.
-	void execCommand(Console sistema):
-	{
-	}
-	{
-	  < EXEC > block() {sistema.printOutput("Execution block completed."); }
-	}
-
-	//Definicion de variables.
-	void defVar():
-	{
-
-	  String name;
-	  int value;
-	}
-	{
-	  <NEW> <VAR> name = ID() < EQUALS > value=num() ";"
-	  {
-	    vars.put(name, value);
-	  }
-	}
-	
-	//Definicion de macros.
-
-	void defMacro():
-	{
-	  String name;
-	  List<String> params = new LinkedList<>();
-	  Node blockNode;
-	}
-	{
-	  < NEW > < MACRO > name = ID() "(" paramList(params) ")" block()
-	
-		{
-	  		macros.put(name, new Macro(params, blockNode));
-		}
-	}
-
-	//Lista de parametros.
-	void paramList(List<String> params):
-	{
-	  String param;
-	}
-	{
-	  (param = ID() { params.add(param); }
-	  	("," param = ID() { params.add(param); })*)?
-	}
-
-	//Bloque instrucciones.
-	void block():
-	{
-	}
-	{
-	  (command(sistema) ";" )+
-	}
-
-	//boolean command(uniandes.lym.robot.view.Console sistema) :
-	boolean command(Console sistema):
-	{	
-		String dir;
-		String orient;
-		int steps;
-		int x,y;
-		salida=new String();	
-	}
-
-	
-	{
-		(		  (
-		    execCommand(sistema)
-		|    <RIGHT> "(" ")" {world.turnRight();salida = "Command: Turnright";}
-		| 	<MOV>  "(" x=num() ")" {world.moveForward(x,false);salida = "Command: Moveforward ";}  
-		| 	<HOP>  "(" x=num() ")" {world.moveForward(x,true);salida = "Command:Jumpforward ";}
-		|  "turnToMy" "(" dir = direction() ")" { executeTurnToMy(dir); salida = "Command: Turn to My " + dir; }
-		|  "turnToThe" "(" orient = orientation() ")" { executeTurnToThe(orient); salida = "Command: Turn to The " + orient; }
-		|  "walk" "(" steps = num() ")" {world.moveForward(steps, false); salida = "Command: Walk " + steps + "steps forward"; }
-		|  "jump" "(" steps = num() ")" {world.moveForward(steps, true); salida = "Command: Jump " + steps + "steps forward"; }
-		| 	<GO>  "(" x=num() "," y=num()")" {world.setPostion(x,y);salida = "Command:GO ";}  
-		|  <PUT> "("  put() ")"					  			
-		|  <PICK> "(" get()  ")"	
-	    |  < POP > "(" x=num() ")" {world.popBalloons(x); salida = "Comando:  Pop";}
-		) ";" 
-
-		{
-		    try {
-	    			 Thread.sleep(900);
-	    	    } catch (InterruptedException e) {
-	    			        System.err.format("IOException: %s%n", e);
-	    		    }
-	    			 
-			sistema.printOutput(salida);
-			return true;
-		})+
-
-    	| <EOF> {return false;} 
-	}
-
-	void put() :
-	{
-		int f=1;	
-	}
-	{
-		( <CHIPS>    "," f=num() {world.putChips(f); salida = "Command:  Put Chips"; })
-		|  	  ( <BALLOONS>   "," f=num() {world.putBalloons(f); salida = "Command:  Put Balloons";})	 
-
-	}
-
-	void get() :
-	{
-		int f=1;	
-	}
-	{
-		( <CHIPS>   "," f=num() {world.pickChips(f);salida = "Command:  Pick chips";})
-		|  	  ( <BALLOONS>   "," f=num() {world.grabBalloons(f);salida="Command:  Pick balloons";})	 
-
-	}
-
-	
-	
-
-	/**
-	 * Unsigned decimal number
-	 * @return the corresponding value of the string
-	 * @error  corresponding value is too large
-	 */
-
-	int num() throws Error:
-	{	
-		int total=1;
-	}
-	{
-		<NUM>
-		{
-			try 
-			{
-				total = Integer.parseInt(token.image);
-			} 
-			catch (NumberFormatException ee) 
-			{
-				throw new Error("Number out of bounds: "+token.image+" !!");
-			}
-			return total;
-		}
-	}
-
-	String direction():
-	{
-	  Token t;
-	}
-	{
-	  t = (< LEFT >|< RIGHT >|< BACK >) {
-	    return t.image;
-	  }
-	}
-
-	String orientation():
-	{
-	  Token t;
-	}
-	{
-	  t = (< NORTH >|< SOUTH >|< EAST >|< WEST >) {
-	    return t.image;
-	  }
-	}
-
-	//Ejecutar turn to my.
-	void executeTurnToMy(String dir) {
-	  if (dir.equalsIgnoreCase("left")) {
-	    world.turnLeft();
-	 } else if (dir.equalsIgnoreCase("right")){
-	   world.turnRight();
-	 } else if (dir.equalsIgnoreCase("back")) {
-	   world.turnBack();
-	 }
+String ID():
+{
+    Token t;
+}
+{
+    t = <ID> { return t.image; }
 }
 
-	//Ejecutar turn to the.
-	void executeTurnToThe(String orient) {
-	  if (orient.equalsIgnoreCase("north")) {
-	    world.turnTo(Robotworld.NORTH);
-	  } else if (orient.equalsIgnoreCase("south")) {
-	    world.turnTo(Robotworld.SOUTH);
-	  } else if (orient.equalsIgnoreCase("east")) {
-	    world.turnTo(Robotworld.EAST);
-	  } else if (orient.equalsIgnoreCase("west")) {
-	    world.turnTo(Robotworld.WEST);
-	  }
-	}
+void execCommand(Console sistema):
+{
+}
+{
+    <EXEC> block(sistema) { sistema.printOutput("Execution block completed."); }
+}
 
-	void moves():
-	{
-	  List<String > directions = new LinkedList< >();
-	  String dir;
-	}
-	{
-	  "moves" "(" dir = direction() { directions.add(dir); } ("," dir = direction() { directions.add(dir); })*")"
-	  {
-	    String direccionInicial = world.getFacing();
+void defVar():
+{
+    String name;
+    int value;
+}
+{
+    <NEW> <VAR> name = ID() <EQUALS> value = num() ";"
+    {
+        vars.put(name, value);
+    }
+}
 
-	    for (String d: directions) {
-	      if (d.equalsIgnoreCase("forward")) {
-	        world.moveForward(1,false);
-	      }  else if (d.equalsIgnoreCase("right")){
-	        world.turnRight();
-	        world.moveForward(1,false);
-	      } else if (d.equalsIgnoreCase("left")){
-	        world.turnLeft();
-	        world.moveForward(1,false);
-	      } else if (d.equalsIgnoreCase("backwards")){
-	        world.turnBack();
-	        world.moveForward(1,false);
-	      }
-	    }
-	    world.turnTo(direccionInicial);
-	    salida = "Command: Moves executed";
-	  }
-	}
+void defMacro():
+{
+    String name;
+    List<String> params = new LinkedList<>();
+    Node blockNode;
+}
+{
+    <NEW> <MACRO> name = ID() "(" paramList(params) ")" block()
+    {
+        macros.put(name, new Macro(params, blockNode));
+    }
+}
 
-	void nop():
-	{
-	}
-	{
-	  "nop" "(" ")"
-	  {
-	    salida = "Command: nop (no operation)";
-	  }
-	}
+void paramList(List<String> params):
+{
+    String param;
+}
+{
+    (param = ID() { params.add(param); } ("," param = ID() { params.add(param); })*)?
+}
 
-	void safeExe():
-	{
-	  boolean success = true;
-	}
-	{
-	  "safeExe "(" command(sistema) ")"
-	  {
-	    try {
-	      if (command(sistema)) {
-	        salida = "Command executed successfully";
-	      } else {
-	        success = false;
-	        salida = "Command failed, not executed";
-	      }
-	    }catch (Exception e) {
-	      success = false;
-	      salida = "Command caused an error, not excecuted";
-	  }
-	}
+void block(Console sistema):
+{
+}
+{
+    (command(sistema) ";")+
+}
+
+boolean command(Console sistema):
+{
+    String dir;
+    String orient;
+    int steps;
+    int x, y;
+    salida = new String();
+}
+{
+    (
+        execCommand(sistema) |
+        <RIGHT> "(" ")" { world.turnRight(); salida = "Command: Turn right"; } |
+        <MOV> "(" x = num() ")" { world.moveForward(x, false); salida = "Command: Move forward"; } |
+        <HOP> "(" x = num() ")" { world.moveForward(x, true); salida = "Command: Jump forward"; } |
+        < TURNTOMY > "(" dir = direction() ")" { executeTurnToMy(dir); salida = "Command: Turn to My " + dir; } |
+        < TURNTOTHE > "(" orient = orientation() ")" { executeTurnToThe(orient); salida = "Command: Turn to The " + orient; } |
+        < WALK > "(" steps = num() ")" { world.moveForward(steps, false); salida = "Command: Walk " + steps + " steps forward"; } |
+        < JUMP > "(" steps = num() ")" { world.moveForward(steps, true); salida = "Command: Jump " + steps + " steps forward"; } |
+        <GO> "(" x = num() "," y = num() ")" { world.setPostion(x, y); salida = "Command: GO"; } |
+        <PUT> "(" put() ")" |
+        <PICK> "(" get() ")" |
+        <POP> "(" x = num() ")" { world.popBalloons(x); salida = "Command: Pop"; }
+    ) ";" 
+    {
+        try {
+            Thread.sleep(900);
+        } catch (InterruptedException e) {
+            System.err.format("IOException: %s%n", e);
+        }
+        sistema.printOutput(salida);
+        return true;
+    }
+    | <EOF> { return false; }
+}
+
+void put():
+{
+    int f = 1;
+}
+{
+    (<CHIPS> "," f = num() { world.putChips(f); salida = "Command: Put Chips"; }) |
+    (<BALLOONS> "," f = num() { world.putBalloons(f); salida = "Command: Put Balloons"; })
+}
+
+void get():
+{
+    int f = 1;
+}
+{
+    (<CHIPS> "," f = num() { world.pickChips(f); salida = "Command: Pick Chips"; }) |
+    (<BALLOONS> "," f = num() { world.grabBalloons(f); salida = "Command: Pick Balloons"; })
+}
+
+int num() throws Error:
+{
+    int total = 1;
+}
+{
+    <NUM>
+    {
+        try {
+            total = Integer.parseInt(token.image);
+        } catch (NumberFormatException ee) {
+            throw new Error("Number out of bounds: " + token.image + " !!");
+        }
+        return total;
+    }
 }
 
 
+String direction():
+{
+	Token t;
+}
+{
+  t = < LEFT > | < RIGHT > | < BACK >
+  {
+    return t.image;
+  }
+}
 
-	    
 
-    
-	    
+String orientation():
+{
+  Token t;
+}
+{
+  t = < NORTH > | < SOUTH > | < EAST > | < WEST >
+  {
+    return t.image;
+  }
+}
 
-	
+
+// Agregar la condición if
+void conditional(Console sistema):
+{
+}
+{
+    < IF > "(" condition() ")" < THEN > block(sistema) (< ELSE > block(sistema))? < FI >
+    {
+        salida = "Conditional executed.";
+        sistema.printOutput(salida);
+    }
+}
+
+// Agregar el bucle do...od
+void loop(Console sistema):
+{
+  boolean conditionResult;
+}
+{
+    < DO > "(" condition() ")" block(sistema) < OD >
+    {
+      while (conditionResult) {
+        block(sistema);
+        conditionResult = condition();
+      }
+        salida = "Loop executed.";
+        sistema.printOutput(salida);
+    }
+}
+
+// Agregar la repetición rep...per
+void repeat(Console sistema):
+{
+    int times;
+}
+{
+    < REP > times = num() < TIMES > block(sistema) < PER >
+    {
+      for (int i = 0; i < times; i++) {
+        block(sistema);
+      }
+        salida = "Repeated " + times + " times.";
+        sistema.printOutput(salida);
+    }
+}
+
+// Condiciones adicionales
+boolean condition():
+{
+}
+{
+    (
+        <ISBLOCKED><QUESTIONMARK > "(" direction() ")" { return world.isBlocked(t.image); } |
+        <ISFACING><QUESTIONMARK > "(" orientation() ")" { return world.isFacing(t.image); } |
+        < ZERO ><QUESTIONMARK > "(" num() ")" { return num() == 0; } |
+        < NOT > "(" condition() ")" { return !condition(); }
+    )
+}
+
+// Implementación del comando letGo
+void letGo() :
+{
+    int balloons;
+}
+{
+    < LETGO > "(" balloons = num() ")"
+    {
+        world.putBalloons(balloons);
+        salida = "Command: Let go " + balloons + " balloons.";
+    }
+}
+
+// Mejora del comando safeExe
+void safeExe(Console sistema):
+{
+    boolean success = true;
+}
+{
+    "safeExe" "(" command(sistema) ")"
+    {
+        try {
+            if (command(sistema)) {
+                salida = "Command executed successfully.";
+            } else {
+                success = false;
+                salida = "Command failed, not executed.";
+            }
+        } catch (Exception e) {
+            success = false;
+            salida = "Command caused an error, not executed.";
+        }
+        sistema.printOutput(salida);
+    }
+}
+
+// Comando moves mejorado
+void moves():
+{
+    List<String> directions = new LinkedList<>();
+    String dir;
+}
+{
+    "moves" "(" dir = direction() { directions.add(dir); } ("," dir = direction() { directions.add(dir); })* ")"
+    {
+        String initialDirection = world.getFacing();
+        for (String d : directions) {
+            if (d.equalsIgnoreCase("forward")) {
+                world.moveForward(1, false);
+            } else if (d.equalsIgnoreCase("right")) {
+                world.turnRight();
+                world.moveForward(1, false);
+            } else if (d.equalsIgnoreCase("left")) {
+                world.turnLeft();
+                world.moveForward(1, false);
+            } else if (d.equalsIgnoreCase("backwards")) {
+                world.turnBack();
+                world.moveForward(1, false);
+            }
+        }
+        world.turnTo(initialDirection);
+        salida = "Command: Moves executed.";
+    }
+}
+
+int value():
+{
+  int val = 0;
+  String varName;
+}
+{
+
+  (
+    val = num() {
+      return val;
+    } |
+
+    varName = < ID > {
+      if (vars.containsKey(varName)) {
+        return vars.get(varName);
+      } else {
+        throw new Error("Variable no definida: " + varName);
+      }
+    } |
+
+    < SIZE > {
+      return world.getN(); }|
+    < MYCHIPS > {
+      return world.getMyChips(); }|
+    < MYBALLOONS > {
+      return world.getMyBalloons(); }|
+    < BALLONSHERE > {
+      return world.countBalloons(); }
+    )
+  }
+
+
+	     
+
+
+
+
+
+
+
+
+
+
+
+
